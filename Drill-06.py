@@ -15,8 +15,12 @@ x=TUK_WIDTH//2
 y=TUK_HEIGHT//2
 dirx=0
 diry=0
-randomPoints_X=random.randint(0,TUK_WIDTH)
-randomPoints_Y=random.randint(0,TUK_HEIGHT)
+randomPoints_X=random.randint(50,TUK_WIDTH-50)
+randomPoints_Y=random.randint(50,TUK_HEIGHT-50)
+speed = 5  
+direction = 1  # 1: 오른쪽, -1: 왼쪽
+
+
 def escape_event():
     global running
     running = False
@@ -41,19 +45,24 @@ def moving_character(p1,p2):
       x2, y2 = p2[0], p2[1]
       a = (y2-y1)/(x2-x1)
       b = y1 - x1 * a
-      if(x1<x2):
-          for x in range(x1, x2 + 1, 10):
-              moving_right() 
-              y = a * x + b
+      for x in range(x1, x2 + 1, 10):
+          y = a * x + b
       
+def draw_character():
+    global frame, direction, x, y
+    if x<randomPoints_X:
+        direction=1
+    elif x>randomPoints_X:
+        direction=-1
+
+    if direction==1: #오른쪽
+        moving_character([x,y],[randomPoints_X,randomPoints_Y])
+        character.clip_draw(frame * 100, 4 , 100,100, x, y, 100, 100)
+    elif direction==-1:
+        moving_character([x,y],[randomPoints_X,randomPoints_Y])
+        character.clip_draw(frame * 100, 4 , 100,100, x, y, 100, 100)
 
 
-
-def right_events():
-    pass
-
-def left_events():
-    pass
 
 def moving_right():
     global frame
@@ -72,20 +81,19 @@ def moving_left():
         x=10
     frame = (frame + 1) % 4
     character.clip_draw(frame * 160, 4 + 320, 160, 160, x, y, 100, 100)
-def moving_up():
-    pass
+
 
 
 def draw_hand():
-    global randomPoints_X,randomPoints_Y
-    clear_canvas()
-    tuk_ground.draw(TUK_WIDTH // 2, TUK_HEIGHT // 2)
     hand.draw(randomPoints_X,randomPoints_Y)
-    update_canvas()
 
 while running:
     handle_events()
+    moving_character([x, y], [randomPoints_X, randomPoints_Y])
+    clear_canvas()
+    tuk_ground.draw(TUK_WIDTH // 2, TUK_HEIGHT // 2)
     draw_hand()
-    moving_right()
+    draw_character()
+    update_canvas()
 
     delay(0.05)
